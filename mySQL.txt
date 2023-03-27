@@ -1,0 +1,60 @@
+CREATE SCHEMA IF NOT EXISTS `store` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
+USE `store` ;
+
+CREATE TABLE IF NOT EXISTS `store`.`customers` (
+  `customer_id` INT NOT NULL AUTO_INCREMENT,
+  `customer_name` VARCHAR(256) NOT NULL,
+  `customer_age` INT NOT NULL,
+  `customer_phone_number` INT NOT NULL,
+  `customer_address` VARCHAR(256) NOT NULL,
+  PRIMARY KEY (`customer_id`));
+
+CREATE TABLE IF NOT EXISTS `store`.`orders` (
+  `order_id` INT NOT NULL AUTO_INCREMENT,
+  `customer_id` INT NOT NULL,
+  `order_date` DATE NOT NULL,
+  `order_cost` INT NOT NULL,
+  PRIMARY KEY (`order_id`),
+  INDEX `customer_id_idx` (`customer_id` ASC) VISIBLE,
+  CONSTRAINT `customer_id`
+    FOREIGN KEY (`customer_id`)
+    REFERENCES `store`.`customers` (`customer_id`));
+
+CREATE TABLE `store`.`categories` (
+  `category_id` INT NOT NULL AUTO_INCREMENT,
+  `category_name` VARCHAR(256) NOT NULL,
+  PRIMARY KEY (`category_id`));
+
+CREATE TABLE `store`.`products` (
+  `product_id` INT NOT NULL AUTO_INCREMENT,
+  `product_name` VARCHAR(256) NOT NULL,
+  `product_price` INT NOT NULL,
+  `product_description` VARCHAR(1028) NOT NULL,
+  `product_quantity` INT NOT NULL,
+  `category_id` INT NOT NULL,
+  PRIMARY KEY (`product_id`),
+  INDEX `category_id_idx` (`category_id` ASC) VISIBLE,
+  CONSTRAINT `category_id`
+    FOREIGN KEY (`category_id`)
+    REFERENCES `store`.`categories` (`category_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+CREATE TABLE `store`.`order_product_relationships` (
+  `relationship_id` INT NOT NULL AUTO_INCREMENT,
+  `order_id` INT NOT NULL,
+  `product_id` INT NOT NULL,
+  `product_quantity` INT NOT NULL,
+  PRIMARY KEY (`relationship_id`),
+  INDEX `order_id_idx` (`order_id` ASC) VISIBLE,
+  INDEX `product_id_idx` (`product_id` ASC) VISIBLE,
+  CONSTRAINT `order_id`
+    FOREIGN KEY (`order_id`)
+    REFERENCES `store`.`orders` (`order_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `product_id`
+    FOREIGN KEY (`product_id`)
+    REFERENCES `store`.`products` (`product_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
